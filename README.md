@@ -154,120 +154,76 @@ We evaluate **co-occurrence (context windows)**, that is, _which words tend to a
 The full collection of text is called a **corpus** (a set of documents).
 For this analysis, each document is represented as a single line of text.
 
-## Example Output
+# Corpus Exploration – Bakery Text Analysis
 
-```text
-Corpus contains 22 documents.
-Tokenization complete.
-shape: (10, 2)
-┌──────────┬────────┐
-│ category ┆ token  │
-│ ---      ┆ ---    │
-│ str      ┆ str    │
-╞══════════╪════════╡
-│ dog      ┆ dog    │
-│ dog      ┆ barks  │
-│ dog      ┆ loudly │
-│ dog      ┆ the    │
-│ dog      ┆ puppy  │
-│ dog      ┆ runs   │
-│ dog      ┆ the    │
-│ dog      ┆ yard   │
-│ dog      ┆ canine │
-│ dog      ┆ wears  │
-└──────────┴────────┘
-Top global tokens:
-shape: (10, 2)
-┌────────┬─────┐
-│ token  ┆ len │
-│ ---    ┆ --- │
-│ str    ┆ u32 │
-╞════════╪═════╡
-│ the    ┆ 27  │
-│ near   ┆ 4   │
-│ truck  ┆ 3   │
-│ cat    ┆ 3   │
-│ yard   ┆ 3   │
-│ garage ┆ 3   │
-│ dog    ┆ 3   │
-│ car    ┆ 3   │
-│ kitten ┆ 2   │
-│ window ┆ 2   │
-└────────┴─────┘
-Top tokens by category:
-shape: (12, 3)
-┌──────────┬─────────┬─────┐
-│ category ┆ token   ┆ len │
-│ ---      ┆ ---     ┆ --- │
-│ str      ┆ str     ┆ u32 │
-╞══════════╪═════════╪═════╡
-│ truck    ┆ the     ┆ 4   │
-│ truck    ┆ truck   ┆ 3   │
-│ truck    ┆ pickup  ┆ 1   │
-│ truck    ┆ carries ┆ 1   │
-│ truck    ┆ trailer ┆ 1   │
-│ …        ┆ …       ┆ …   │
-│ truck    ┆ heavy   ┆ 1   │
-│ truck    ┆ loads   ┆ 1   │
-│ truck    ┆ powers  ┆ 1   │
-│ truck    ┆ cargo   ┆ 1   │
-│ truck    ┆ hauls   ┆ 1   │
-└──────────┴─────────┴─────┘
-CAT top tokens: ['the', 'cat', 'kitten', 'window', 'near']
-TRUCK top tokens: ['the', 'truck', 'pickup', 'carries', 'trailer']
-CAR top tokens: ['the', 'garage', 'car', 'sedan', 'near']
-DOG top tokens: ['the', 'yard', 'dog', 'across', 'ran']
+## Technical Modification
 
-Context for 'dog':
-['barks', 'loudly', 'holds', 'the', 'the', 'ran', 'across']
+For this assignment, I modified the original corpus exploration notebook to use a custom bakery-themed corpus instead of the example animal and vehicle corpus. I replaced the original categories with cupcake, pastry, cookie, cake, and pie. This changed the input data and made the analysis more relevant to a bakery and pastry theme.
 
-Context for 'cat':
-['sleeps', 'quietly', 'the', 'has', 'whiskers', 'the', 'slept', 'near']
+I also added a stopword filtering step after tokenization. This removed common filler words such as “the,” “is,” and “with” from the token DataFrame before calculating token frequencies. This improved the quality of the most frequent token results by highlighting more meaningful category-specific words.
 
-Context for 'car':
-['drives', 'the', 'the', 'moves', 'down', 'the', 'stopped', 'near']
+In addition, I updated the visualization section to display the top seven tokens in the cupcake category using a horizontal bar chart with a teal color scheme. This made the output more readable and visually distinct from the original example.
 
-Context for 'truck':
-['carries', 'cargo', 'powers', 'the', 'the', 'hauls', 'heavy']
-Top bigrams:
-shape: (10, 2)
-┌────────────┬─────┐
-│ bigram     ┆ len │
-│ ---        ┆ --- │
-│ str        ┆ u32 │
-╞════════════╪═════╡
-│ near the   ┆ 4   │
-│ the yard   ┆ 3   │
-│ the garage ┆ 3   │
-│ the cat    ┆ 2   │
-│ ran across ┆ 2   │
-│ the window ┆ 2   │
-│ the kitten ┆ 2   │
-│ the sedan  ┆ 2   │
-│ slept near ┆ 2   │
-│ across the ┆ 2   │
-└────────────┴─────┘
-```
+---
 
-## Text Categorization Analysis
+## Why I Made the Change
 
-- Which words appear **most often in each category**, and why?
-- Which words tend to appear near **dog**, **cat**, or **truck**?
-- What **differences** do you observe between animal-related and vehicle-related text?
-- Which words seem **interchangeable** based on how they are used?
-- What **patterns** help infer meaning from the data?
+I made these changes to create a more interesting and customized corpus while also improving the quality of the text analysis. The bakery categories provided a clear theme for comparing vocabulary across groups. Adding stopword filtering made the frequency results more useful because common filler words no longer dominated the token counts. Updating the chart also made the output easier to interpret.
 
-## General Insights
+---
 
-These categories are artificial and were chosen to illustrate the process.
-Related approaches are used to prepare and analyze large text corpora for modern LLMs.
+## What I Observed After Running the Project
 
-By examining token frequency, category differences, and co-occurrence
-(which words appear near each other),
-the **measurable structure of text** begins to appear.
+After running the modified notebook, the bakery corpus produced category-specific token patterns that were easy to compare.
 
-Words used in similar contexts exhibit similar patterns,
-and groups of related terms emerge naturally from the data.
+The global token frequency results showed that words such as `icing`, `fresh`, `pie`, `cake`, and `bakery` appeared often across the corpus.
 
-Even before any modeling, we can begin to distinguish categories
-and see how meaning is reflected through **patterns of use**.
+The top tokens by category showed clear vocabulary differences:
+
+- **Cake** was associated with words like `cake`, `decorated`, `filled`, `pink`, and `cream`.
+- **Pie** was associated with `pie`, `crust`, `baked`, `sugar`, and `golden`.
+- **Cookie** was associated with `cookies`, `baking`, `chocolate`, `pastel`, and `chip`.
+- **Cupcake** was associated with `cupcake`, `cream`, `frosting`, `creamy`, and `buttercream`.
+- **Pastry** was associated with `pastry`, `apple`, `croissant`, `morning`, and `baked`.
+
+The co-occurrence results showed which words appeared near the target bakery words. For example, `cupcake` appeared near words like `vanilla`, `creamy`, `red`, `velvet`, and `topped`, while `pie` appeared near `strawberry`, `flaky`, `apple`, and `blueberry`. This helps show how words appear in similar contexts. The bigram results also showed common word pairs such as `the bakery`, `decorated with`, `warm apple`, and `bakery serves`. The cupcake visualization showed that `cupcake` was the most frequent token in that category, followed by tokens such as `sells`, `topped`, `icing`, `velvet`, `vanilla`, and `cupcakes`.
+
+---
+
+## Analytical Questions
+
+### What tokens dominate each category?
+
+Each category is dominated by words tied to its baked item. Cupcake is dominated by `cupcake`, `cream`, `frosting`, and `buttercream`.
+
+- Cake is dominated by `cake`, `decorated`, `filled`, and `cream`.
+- Pie is dominated by `pie`, `crust`, `baked`, and `sugar`.
+- Cookie is dominated by `cookies`, `chocolate`, `chip`, and `pastel`.
+- Pastry is dominated by `pastry`, `croissant`, `apple`, and `baked`.
+
+### How do categories differ in vocabulary?
+
+The categories differ by the descriptive words associated with each baked good.
+
+- Cupcake vocabulary emphasizes frosting and decoration.
+- Cake vocabulary emphasizes filling and decoration.
+- Pie vocabulary emphasizes crust and fruit flavors.
+- Cookie vocabulary emphasizes ingredients and baking.
+- Pastry vocabulary emphasizes flaky textures and breakfast-style items like croissants and danishes.
+
+### What words appear in similar contexts?
+
+Words appear in similar contexts when they are surrounded by descriptive bakery terms. For example, `cupcake` appears near `vanilla`, `creamy`, `red`, and `velvet`, while `pie` appears near `strawberry`, `flaky`, `apple`, and `blueberry`. These context words show that desserts are often described by flavor and texture.
+
+### What structure is visible before using any models?
+
+Before using any models, the corpus already shows patterns through simple exploration.
+
+- Token frequency reveals dominant terms
+- Category frequency reveals vocabulary differences
+- Co-occurrence shows nearby context relationships
+- Bigrams show common word pairings such as `the bakery` and `decorated with`.
+
+## What possible improvements can be made?
+
+One future improvement would be to apply the same stopword filtering to the co-occurrence and bigram sections so that filler words such as `the` and `has` do not appear in the results.

@@ -13,6 +13,7 @@ Analytical Questions
 - How do categories differ in vocabulary?
 - What words appear in similar contexts?
 - What structure is visible before using any models?
+- What possible improvements can be made?
 
 Notes
 
@@ -66,32 +67,44 @@ LOG.info("Logger configured.")
 # Each document includes a category and text.
 
 corpus: list[dict[str, str]] = [
-    # Dogs
-    {"category": "dog", "text": "A dog barks loudly."},
-    {"category": "dog", "text": "The puppy runs in the yard."},
-    {"category": "dog", "text": "A canine wears a leash."},
-    {"category": "dog", "text": "The kennel holds the dog."},
-    {"category": "dog", "text": "The dog ran across the yard."},
-    {"category": "dog", "text": "The puppy ran across the yard."},
-    # Cats
-    {"category": "cat", "text": "A cat sleeps quietly."},
-    {"category": "cat", "text": "The kitten plays with yarn."},
-    {"category": "cat", "text": "A feline purrs softly."},
-    {"category": "cat", "text": "The cat has whiskers."},
-    {"category": "cat", "text": "The cat slept near the window."},
-    {"category": "cat", "text": "The kitten slept near the window."},
-    # Cars
-    {"category": "car", "text": "A car drives on the road."},
-    {"category": "car", "text": "The sedan parks in the garage."},
-    {"category": "car", "text": "A vehicle has four wheels."},
-    {"category": "car", "text": "The car moves down the highway."},
-    {"category": "car", "text": "The car stopped near the garage."},
-    {"category": "car", "text": "The sedan stopped near the garage."},
-    # Trucks
-    {"category": "truck", "text": "A truck carries cargo."},
-    {"category": "truck", "text": "The pickup pulls a trailer."},
-    {"category": "truck", "text": "The engine powers the truck."},
-    {"category": "truck", "text": "The truck hauls heavy loads."},
+    # Cupcakes
+    {
+        "category": "cupcake",
+        "text": "A vanilla cupcake has creamy buttercream frosting.",
+    },
+    {
+        "category": "cupcake",
+        "text": "The bakery sells chocolate cupcakes with rainbow sprinkles.",
+    },
+    {
+        "category": "cupcake",
+        "text": "A red velvet cupcake is topped with cream cheese icing.",
+    },
+    # Pastry
+    {"category": "pastry", "text": "A flaky croissant is baked fresh every morning."},
+    {
+        "category": "pastry",
+        "text": "The pastry chef prepares fruit danishes and turnovers.",
+    },
+    {
+        "category": "pastry",
+        "text": "Buttery puff pastry surrounds a warm apple filling.",
+    },
+    # Cookies
+    {"category": "cookie", "text": "The bakery serves warm chocolate chip cookies."},
+    {"category": "cookie", "text": "A sugar cookie is decorated with pastel icing."},
+    {"category": "cookie", "text": "Fresh oatmeal cookies cool on the baking rack."},
+    # Cake
+    {"category": "cake", "text": "A birthday cake is decorated with pink frosting."},
+    {"category": "cake", "text": "The layer cake is filled with strawberry cream."},
+    {"category": "cake", "text": "A lemon cake is glazed with sweet icing."},
+    # Pie
+    {"category": "pie", "text": "A strawberry pie has a flaky buttery crust."},
+    {"category": "pie", "text": "A warm apple pie is baked with cinnamon and sugar."},
+    {
+        "category": "pie",
+        "text": "The bakery serves fresh blueberry pie with a golden crust.",
+    },
 ]
 
 # Show results
@@ -137,6 +150,44 @@ print("Tokenization complete.")
 print(token_df.head(10))
 
 
+# This step removes common stopwords (such as "the", "is", and "with") and very short tokens. These words do not add meaningful information.
+
+STOP_WORDS: set[str] = {
+    "a",
+    "an",
+    "and",
+    "are",
+    "as",
+    "at",
+    "be",
+    "but",
+    "by",
+    "for",
+    "from",
+    "has",
+    "have",
+    "in",
+    "is",
+    "it",
+    "its",
+    "of",
+    "on",
+    "or",
+    "that",
+    "the",
+    "to",
+    "was",
+    "were",
+    "will",
+    "with",
+}
+
+# Filter tokens in DataFrame
+token_df = token_df.filter(
+    (pl.col("token").str.len_chars() > 2) & (~pl.col("token").is_in(STOP_WORDS))
+)
+
+print("Stopword filtering complete.")
 # ============================================================
 # Section 4. Compute Global Token Frequencies
 # ============================================================
@@ -220,6 +271,8 @@ co_occurrence_dict: dict[str, list[str]] = defaultdict(list)
 # and for each token, determine its context tokens based on the defined window size.
 for doc in corpus:
     tokens = tokenize(doc["text"])
+
+    # Use tokenized text to find nearby context words
     for i, token in enumerate(tokens):
         start = max(0, i - WINDOW_SIZE)
         end = min(len(tokens), i + WINDOW_SIZE + 1)
@@ -229,10 +282,10 @@ for doc in corpus:
                 co_occurrence_dict[token].append(ctx)
 
 # Show results
-for target in ["dog", "cat", "car", "truck"]:
-    print(f"\nContext for '{target}':")
+print("Co-occurrence analysis complete.")
+for target in ["cupcake", "pastry", "cookie", "cake", "pie"]:
+    print(f"\nTop context words for '{target}':")
     print(co_occurrence_dict[target][:10])
-
 
 # ============================================================
 # Section 8. Create Bigrams (Local Word Pairs) and Compute Frequencies
@@ -276,17 +329,17 @@ print(bigram_freq_df.head(10))
 # Section 9. Visualize Token Frequencies
 # ============================================================
 
-print("IMPORTANT: Close chart window to continue execution.")
-
 # Define a new DataFrame that filters the category frequency DataFrame
-# to get the top 5 tokens for the "dog" category.
-dog_df = category_freq_df.filter(pl.col("category") == "dog").head(5)
+# to get the top 7 tokens for the "cupcake" category.
+bakery_df = category_freq_df.filter(pl.col("category") == "cupcake").sort("len").tail(7)
+
 
 # Create a figure that is 8 inches wide and 4 inches tall
 plt.figure(figsize=(8, 4))
 
 # Add a bar chart to the figure using the tokens as the x-axis and their frequencies as the y-axis.
-plt.bar(dog_df["token"], dog_df["len"])
+# Horizontal bar chart with teal color instead
+plt.barh(bakery_df["token"], bakery_df["len"], color="teal")
 
 # Define the x-axis tick parameters to rotate the labels by 45 degrees for better readability.
 # The gca() function gets the current axes of the plot, and tick_params() is used to set the rotation of the x-axis labels.
@@ -294,33 +347,62 @@ ax = plt.gca()
 ax.tick_params(axis="x", labelrotation=45)
 
 # Set the title and labels for the axes of the plot.
-plt.title("Case Example: Top Tokens (Dog Category)\n(Close this window to continue)")
-plt.xlabel("Token")
-plt.ylabel("Frequency")
+plt.title("Top 7 Tokens in Cupcake Category", fontsize=14, fontweight="bold")
+plt.xlabel("Frequency")
+plt.ylabel("Token")
 
 # Adjust the layout of the plot to prevent overlap and ensure everything fits well.
 plt.tight_layout()
+
+plt.xticks([0, 1, 2])
 
 # Display the plot on the screen.
 # The execution of the script will pause until the plot window is closed.
 plt.show()
 
-
 # ============================================================
 # Section 10. Interpret Results and Identify Patterns
 # ============================================================
 
-print("\nCASE GENERAL OBSERVATIONS:")
+print("\nSabriya Sowers' Observations on Bakery Text Patterns:")
 
-print("- Tokens cluster by category (dog, cat, car, truck).")
-print("- Words that appear in similar contexts behave similarly.")
-print("- Co-occurrence reveals contextual relationships between words.")
-print("- Bigrams capture local structure beyond single tokens.")
-print("- Patterns emerge before any machine learning is applied.")
+print("- Tokens cluster by category (cupcake, pastry, cookie, cake, pie).")
+print(
+    "- Words that appear in similar contexts behave similarly (e.g., dessert items described by flavor and texture)."
+)
+print(
+    "- Co-occurrence reveals contextual relationships between ingredients and baked items."
+)
+print(
+    "- Bigrams capture local structure such as common phrases used in baking descriptions."
+)
+print(
+    "- Patterns start to show before any machine learning is applied through frequency and context analysis."
+)
 
-print("\nYOURNAME SPECIFIC OBSERVATIONS:")
-print("TODO")
+print("\nSabriya Sowers' Specific Observations:")
 
+print(
+    "- Cupcake tokens emphasize frosting and decoration (e.g., cream, frosting, buttercream, velvet)."
+)
+print(
+    "- Cake tokens focus on preparation and presentation (e.g., decorated, filled, cream, pink)."
+)
+print(
+    "- Pie tokens highlight ingredients and texture (e.g., crust, apple, strawberry, flaky, baked)."
+)
+print(
+    "- Cookie tokens emphasize ingredients and baking context (e.g., chocolate, chip, pastel, baking)."
+)
+print(
+    "- Pastry tokens focus on texture and type (e.g., croissant, apple, buttery, morning)."
+)
+print(
+    "- Co-occurrence shows that dessert words often appear near flavor or texture descriptors (e.g., cupcake near vanilla and creamy)."
+)
+print(
+    "- Bigrams show common word pairs like 'the bakery', 'decorated with', and 'warm apple'."
+)
 
 # ============================================================
 # END
